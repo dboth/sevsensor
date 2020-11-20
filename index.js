@@ -68,7 +68,7 @@ SevSensor.prototype = {
       humidity: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
       airPressure: Math.floor(Math.random() * (1200 - 500 + 1)) + 500,
       carbonDioxideLevel: Math.floor(Math.random() * (2000 - 400 + 1)) + 400,
-      carbonDioxideDetected: Math.floor(Math.random() * (1 - 0 + 1)) + 0,
+      carbonDioxideDetected: 0,
     };
     self.lastUpdate = new Date().getTime() / 1000;
     self.updateData(params);
