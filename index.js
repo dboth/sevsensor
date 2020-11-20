@@ -12,7 +12,7 @@ module.exports = function (homebridge) {
 /**
  * Air Accessory
  */
-function AirQuality(log, config) {
+function SevSensor(log, config) {
     logger.handler = log;
 
     this.pollingInterval = config.pollingInterval || 300;
