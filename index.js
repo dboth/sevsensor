@@ -44,7 +44,7 @@ function SevSensor(log, config) {
     this.data = undefined;
 }
 
-AirQuality.prototype = {
+SevSensor.prototype = {
 
     // wrapper for updateData method (new data/cache)
     setData: function (params) {
