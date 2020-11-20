@@ -111,7 +111,7 @@ SevSensor.prototype = {
           formatter: (value) => parseFloat(value),
         },
       ],
-      formatter: (value) => Math.min(Math.ceil(parseFloat(value) / 25), 5),
+      formatter: (value) => Math.round(parseFloat(value)),
     });
   },
 
@@ -119,7 +119,7 @@ SevSensor.prototype = {
     this.setData({
       callback: callback,
       key: "temperature",
-      formatter: (value) => Math.round(parseFloat(value)),
+      formatter: (value) => Math.round(parseFloat(value)*10)/10,
     });
   },
 
