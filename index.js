@@ -1,48 +1,157 @@
-// Example Air Quality Sensor Plugin
+"use strict";
 
-module.exports = (api) => {
-  api.registerAccessory('homebridge-sevsensor', SevSensorAccessory);
+let Service, Characteristic;
+
+module.exports = function (homebridge) {
+    Service = homebridge.hap.Service;
+    Characteristic = homebridge.hap.Characteristic;
+
+    homebridge.registerAccessory("homebridge-sevsensor", "SevSensor", SevSensor);
 };
 
-class SevSensorAccessory {
+/**
+ * Air Accessory
+ */
+function AirQuality(log, config) {
+    logger.handler = log;
 
-  constructor(log, config, api) {
-      this.log = log;
-      this.config = config;
-      this.api = api;
+    this.pollingInterval = config.pollingInterval || 300;
 
-      this.Service = this.api.hap.Service;
-      this.Characteristic = this.api.hap.Characteristic;
+    this.name = config.name;
+    this.apikey = config.apikey;
 
-      // extract name from config
-      this.name = config.name;
+    this.showAirQualityIndex = config.showAirQualityIndex || false;
+    this.airQualityIndexName = config.airQualityIndexName || 'Air Quality';
 
-      // your accessory must have an AccessoryInformation service
-      this.informationService = new this.api.hap.Service.AccessoryInformation()
-      .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Custom Manufacturer")
-      .setCharacteristic(this.api.hap.Characteristic.Model, "Custom Model");
+    this.showHumidity = config.showHumidity || false;
+    this.humidityName = config.humidityName || 'Humidity';
 
+    this.showTemperature = config.showTemperature || false;
+    this.temperatureName = config.temperatureName || 'Temperature';
 
-      // create a new Air Quality Sensor service
-      this.service = new this.Service("DISPLAY NAME","e7d03882-a03b-4307-899b-0f0fe2a920f4",this.Service.AirQualitySensor);
+    this.latitude = config.latitude;
+    this.longitude = config.longitude;
 
-      // create handlers for required characteristics
-      this.service.getCharacteristic(this.Characteristic.AirQuality)
-        .on('get', this.handleAirQualityGet.bind(this));
+    if (!this.latitude) {
+        throw new Error("No 'latitude' config value");
+    }
+    if (!this.longitude) {
+        throw new Error("No 'longitude' config value");
+    }
 
-  }
-
-  /**
-   * Handle requests to get the current value of the "Air Quality" characteristic
-   */
-  handleAirQualityGet(callback) {
-    this.log.debug('Triggered GET AirQuality');
-
-    // set this to a valid value for AirQuality
-    const currentValue = 1;
-
-    callback(null, currentValue);
-  }
-
-
+    this.lastUpdate = 0;
+    this.sensors = {};
+    this.data = undefined;
 }
+
+AirQuality.prototype = {
+
+    // wrapper for updateData method (new data/cache)
+    setData: function (params) {
+        if (this.lastUpdate === 0 || this.lastUpdate + this.pollingInterval < (new Date().getTime() / 1000) || this.data === undefined) {
+            this.fetchData(params);
+            return;
+        }
+
+        this.updateData(params);
+    },
+
+    // update sensors data
+    updateData: function (params) {
+        let self = this;
+
+        if (params['key'] in self.data) {
+            let widget = self.sensors[params['key']];
+
+            widget.setCharacteristic(Characteristic.StatusFault, 0);
+            let value = params.formatter(this.data[params['key']]);
+            logger.log('info', params['key'] + ' = ' + value);
+            params.callback(null, value);
+            if ('characteristics' in params) {
+                params['characteristics'].forEach(function (characteristic) {
+                    let value = characteristic.formatter(self.data[characteristic.key]);
+                    logger.log('info', characteristic.key + ' = ' + value);
+                    widget.setCharacteristic(characteristic.characteristic, value);
+                });
+            }
+        } else {
+            this.sensors[params['key']].setCharacteristic(Characteristic.StatusFault, 1);
+            logger.log('info', params['key'] + ' = no value');
+            params.callback(null);
+        }
+    },
+
+    // fetch new data from Airly
+    fetchData: function (params) {
+        let self = this;
+
+        
+    },
+
+    updateAirQualityIndex: function (callback) {
+        this.setData({
+            'callback': callback,
+            'key': 'airQualityIndex',
+            'characteristics': [
+                {
+                    'key': 'pm25',
+                    'characteristic': Characteristic.PM2_5Density,
+                    'formatter': value => parseFloat(value)
+                },
+                {
+                    'key': 'pm10',
+                    'characteristic': Characteristic.PM10Density,
+                    'formatter': value => parseFloat(value)
+                }
+            ],
+            'formatter': value => Math.min(Math.ceil(parseFloat(value) / 25), 5)
+        });
+    },
+
+    updateTemperature: function (callback) {
+        this.setData({
+            'callback': callback,
+            'key': 'temperature',
+            'formatter': value => Math.round(parseFloat(value))
+        });
+    },
+
+    updateHumidity: function (callback) {
+        this.setData({
+            'callback': callback,
+            'key': 'humidity',
+            'formatter': value => Math.round(parseFloat(value))
+        });
+    },
+
+    identify: callback => callback(),
+
+    getServices: function () {
+        let informationService = new Service.AccessoryInformation();
+        informationService
+            .setCharacteristic(Characteristic.Manufacturer, "dboth")
+            .setCharacteristic(Characteristic.Model, "API")
+            .setCharacteristic(Characteristic.SerialNumber, "0000-0000-0000");
+        this.sensors['information'] = informationService;
+
+        if (this.showAirQualityIndex) {
+            let airQualityIndexSensorService = new Service.AirQualitySensor(this.airQualityIndexName);
+            airQualityIndexSensorService.getCharacteristic(Characteristic.AirQuality).on('get', this.updateAirQualityIndex.bind(this));
+            this.sensors['airQualityIndex'] = airQualityIndexSensorService;
+        }
+
+        if (this.showTemperature) {
+            let temperatureSensorService = new Service.TemperatureSensor(this.temperatureName);
+            temperatureSensorService.getCharacteristic(Characteristic.CurrentTemperature).on('get', this.updateTemperature.bind(this));
+            this.sensors['temperature'] = temperatureSensorService;
+        }
+
+        if (this.showHumidity) {
+            let humiditySensorService = new Service.HumiditySensor(this.humidityName);
+            humiditySensorService.getCharacteristic(Characteristic.CurrentRelativeHumidity).on('get', this.updateHumidity.bind(this));
+            this.sensors['humidity'] = humiditySensorService;
+        }
+
+        return Object.values(this.sensors);
+    }
+};
