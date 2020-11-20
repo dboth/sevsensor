@@ -7,8 +7,8 @@
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
+      "ip": {
+        "title": "IP",
         "type": "string",
         "required": true
       }
