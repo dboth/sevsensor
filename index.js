@@ -24,7 +24,7 @@ class SevSensorAccessory {
 
 
       // create a new Air Quality Sensor service
-      this.service = new this.Service(this.Service.AirQualitySensor);
+      this.service = new this.Service("DISPLAY NAME","e7d03882-a03b-4307-899b-0f0fe2a920f4",this.Service.AirQualitySensor);
 
       // create handlers for required characteristics
       this.service.getCharacteristic(this.Characteristic.AirQuality)
