@@ -173,7 +173,7 @@ SevSensor.prototype = {
     carbonDioxideSensorService
       .getCharacteristic(Characteristic.CarbonDioxideDetected)
       .on("get", this.updateCarbonDioxide.bind(this));
-    this.sensors["co2"] = carbonDioxideSensorService;
+    this.sensors["carbonDioxideDetected"] = carbonDioxideSensorService;
 
     //humidity
     let humiditySensorService = new Service.HumiditySensor("Luftfeuchtigkeit");
