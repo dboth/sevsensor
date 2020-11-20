@@ -13,8 +13,6 @@ module.exports = function (homebridge) {
  * Air Accessory
  */
 function SevSensor(log, config) {
-    logger.handler = log;
-
     this.pollingInterval = config.pollingInterval || 300;
 
     this.name = config.name;
@@ -65,18 +63,15 @@ SevSensor.prototype = {
 
             widget.setCharacteristic(Characteristic.StatusFault, 0);
             let value = params.formatter(this.data[params['key']]);
-            logger.log('info', params['key'] + ' = ' + value);
             params.callback(null, value);
             if ('characteristics' in params) {
                 params['characteristics'].forEach(function (characteristic) {
                     let value = characteristic.formatter(self.data[characteristic.key]);
-                    logger.log('info', characteristic.key + ' = ' + value);
                     widget.setCharacteristic(characteristic.characteristic, value);
                 });
             }
         } else {
             this.sensors[params['key']].setCharacteristic(Characteristic.StatusFault, 1);
-            logger.log('info', params['key'] + ' = no value');
             params.callback(null);
         }
     },
