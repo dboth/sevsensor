@@ -17,6 +17,12 @@ class SevSensorAccessory {
       // extract name from config
       this.name = config.name;
 
+      // your accessory must have an AccessoryInformation service
+      this.informationService = new this.api.hap.Service.AccessoryInformation()
+      .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Custom Manufacturer")
+      .setCharacteristic(this.api.hap.Characteristic.Model, "Custom Model");
+
+
       // create a new Air Quality Sensor service
       this.service = new this.Service(this.Service.AirQualitySensor);
 
