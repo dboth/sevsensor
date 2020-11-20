@@ -1,7 +1,7 @@
 // Example Air Quality Sensor Plugin
 
 module.exports = (api) => {
-  api.registerAccessory('SevSensorPlugin', SevSensorAccessory);
+  api.registerAccessory('homebridge-sevsensor', SevSensorAccessory);
 };
 
 class SevSensorAccessory {
