@@ -66,7 +66,7 @@ SevSensor.prototype = {
   "voc": Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
   "temperature": Math.floor(Math.random() * (100 - 0 + 1)) + 0,
   "humidity": Math.floor(Math.random() * (100 - 0 + 1)) + 0,
-  "airPressure": Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
+  //"airPressure": Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
 };
 
     /* request(
