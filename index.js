@@ -61,14 +61,15 @@ SevSensor.prototype = {
     let self = this;
 
     self.data = {
-  "airQualityIndex": Math.floor(Math.random() * (5 - 0 + 1)) + 0,
-  "pm25": Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
-  "voc": Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
-  "temperature": Math.floor(Math.random() * (100 - 0 + 1)) + 0,
-  "humidity": Math.floor(Math.random() * (100 - 0 + 1)) + 0,
-  //"airPressure": Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
-};
-
+      airQualityIndex: Math.floor(Math.random() * (5 - 0 + 1)) + 0,
+      pm25: Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
+      voc: Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
+      temperature: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
+      humidity: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
+      //"airPressure": Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
+    };
+    self.lastUpdate = new Date().getTime() / 1000;
+    self.updateData(params);
     /* request(
       {
         url:
@@ -159,7 +160,6 @@ SevSensor.prototype = {
 
     //co2
 
-
     //humidity
     let humiditySensorService = new Service.HumiditySensor("Luftfeuchtigkeit");
     humiditySensorService
@@ -168,9 +168,7 @@ SevSensor.prototype = {
     this.sensors["humidity"] = humiditySensorService;
 
     //temperature
-    let temperatureSensorService = new Service.TemperatureSensor(
-      "Temperatur"
-    );
+    let temperatureSensorService = new Service.TemperatureSensor("Temperatur");
     temperatureSensorService
       .getCharacteristic(Characteristic.CurrentTemperature)
       .on("get", this.updateTemperature.bind(this));
