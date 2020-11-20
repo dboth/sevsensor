@@ -67,7 +67,8 @@ SevSensor.prototype = {
       temperature: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
       humidity: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
       airPressure: Math.floor(Math.random() * (1200 - 500 + 1)) + 500,
-      co2: Math.floor(Math.random() * (2000 - 400 + 1)) + 400,
+      carbonDioxideLevel: Math.floor(Math.random() * (2000 - 400 + 1)) + 400,
+      carbonDioxideDetected: Math.floor(Math.random() * (1 - 0 + 1)) + 0,
     };
     self.lastUpdate = new Date().getTime() / 1000;
     self.updateData(params);
@@ -116,6 +117,21 @@ SevSensor.prototype = {
     });
   },
 
+  updateCarbonDioxide: function(callback) {
+    this.setData({
+      callback: callback,
+      key: "carbonDioxideDetected",
+      characteristics: [
+        {
+          key: "carbonDioxideLevel",
+          characteristic: Characteristic.CarbonDioxideLevel,
+          formatter: (value) => parseFloat(value),
+        }
+      ],
+      formatter: (value) => Math.round(parseFloat(value)),
+    });
+  },
+
   updateTemperature: function(callback) {
     this.setData({
       callback: callback,
@@ -153,6 +169,11 @@ SevSensor.prototype = {
     this.sensors["airQualityIndex"] = airQualityIndexSensorService;
 
     //co2
+    let carbonDioxideSensorService = new Service.CarbonDioxideSensor("CO2");
+    carbonDioxideSensorService
+      .getCharacteristic(Characteristic.CarbonDioxideDetected)
+      .on("get", this.updateCarbonDioxide.bind(this));
+    this.sensors["co2"] = carbonDioxideSensorService;
 
     //humidity
     let humiditySensorService = new Service.HumiditySensor("Luftfeuchtigkeit");
