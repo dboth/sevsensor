@@ -39,6 +39,7 @@ SevSensor.prototype = {
       let widget = self.sensors[params["key"]];
 
       widget.setCharacteristic(Characteristic.StatusFault, 0);
+      widget.setCharacteristic(Characteristic.StatusActive, 1);
       let value = params.formatter(this.data[params["key"]]);
       params.callback(null, value);
       if ("characteristics" in params) {
@@ -51,6 +52,10 @@ SevSensor.prototype = {
       this.sensors[params["key"]].setCharacteristic(
         Characteristic.StatusFault,
         1
+      );
+      this.sensors[params["key"]].setCharacteristic(
+        Characteristic.StatusActive,
+        0
       );
       params.callback(null);
     }
