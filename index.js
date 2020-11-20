@@ -66,7 +66,7 @@ SevSensor.prototype = {
       voc: Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
       temperature: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
       humidity: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
-      //"airPressure": Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
+      airPressure: Math.floor(Math.random() * (1200 - 500 + 1)) + 500
     };
     self.lastUpdate = new Date().getTime() / 1000;
     self.updateData(params);
@@ -175,13 +175,13 @@ SevSensor.prototype = {
     this.sensors["temperature"] = temperatureSensorService;
 
     //pressure
-    /*let airPressureSensorService = new Service.AirPressureSensor(
+    let airPressureSensorService = new Service.AirPressureSensor(
       "Luftdruck"
     );
     airPressureSensorService
       .getCharacteristic(Characteristic.CurrentAirPressure)
       .on("get", this.updateAirPressure.bind(this));
-    this.sensors["airPressure"] = airPressureSensorService;*/
+    this.sensors["airPressure"] = airPressureSensorService;
 
     return Object.values(this.sensors);
   },
