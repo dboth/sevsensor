@@ -1,16 +1,19 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
-  "pluginType": "platform",
-  "singular": true,
+  "pluginAlias": "homebridge-sevsensor",
+  "pluginType": "accesory",
+  "singular": false,
+  "headerDisplay": "Optional content to display above the plugin config. Supports markdown.",
+  "footerDisplay": "Optional content to display below the plugin config. Supports markdown.",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "title": "Name",
         "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+        "required": true
       }
     }
-  }
+  },
+  "form": null,
+  "display": null
 }
