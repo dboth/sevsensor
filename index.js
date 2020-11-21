@@ -1,13 +1,10 @@
 "use strict";
-const initCustomCharacteristic  = require("./CustomCharacteristic");
 const fetch = require("node-fetch");
 let Service, Characteristic;
-var CustomCharacteristic;
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  CustomCharacteristic = initCustomCharacteristic(homebridge);
   homebridge.registerAccessory("homebridge-sevsensor", "SevSensor", SevSensor);
 };
 
