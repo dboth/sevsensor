@@ -13,6 +13,7 @@ function SevSensor(log, config) {
   this.pollingInterval = 1;
   this.lastUpdate = 0;
   this.sensors = {};
+  this.log = log;
   this.ip = config.id || "http://localhost:8080";
   this.data = undefined;
 }
@@ -67,9 +68,11 @@ SevSensor.prototype = {
 
     self.lastUpdate = new Date().getTime() / 1000;
     self.updateData(params);
+    self.log.info('Fetching from:', self.ip);
     fetch(this.ip)
     .then(response => response.json())
     .then(data => {
+      self.log.info('Fetched from:', JSON.stringify(data));
       self.data = data;
       self.lastUpdate = new Date().getTime() / 1000;
       self.updateData(params);
