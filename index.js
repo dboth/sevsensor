@@ -67,8 +67,6 @@ SevSensor.prototype = {
   fetchData: function(params) {
     let self = this;
 
-    self.lastUpdate = new Date().getTime() / 1000;
-    self.updateData(params);
     self.log.info('Fetching from:', self.ip);
     fetch(this.ip)
     .then(response => response.json())
