@@ -13,11 +13,12 @@ function SevSensor(log, config) {
   this.pollingInterval = 1;
   this.lastUpdate = 0;
   this.sensors = {};
+  this.ip = config.id || "http://localhost:8080";
   this.data = undefined;
 }
 
 SevSensor.prototype = {
-  // wrapper for updateData method (new data/cache)
+  
   setData: function(params) {
     if (
       this.lastUpdate === 0 ||
@@ -31,7 +32,7 @@ SevSensor.prototype = {
     this.updateData(params);
   },
 
-  // update sensors data
+  
   updateData: function(params) {
     let self = this;
 
@@ -60,46 +61,19 @@ SevSensor.prototype = {
       params.callback(null);
     }
   },
-
-  // fetch new data from Airly
+  
   fetchData: function(params) {
     let self = this;
 
-    self.data = {
-      airQualityIndex: Math.floor(Math.random() * (5 - 0 + 1)) + 0,
-      pm25: Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
-      voc: Math.floor(Math.random() * (1000 - 0 + 1)) + 0,
-      temperature: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
-      humidity: Math.floor(Math.random() * (100 - 0 + 1)) + 0,
-      airPressure: Math.floor(Math.random() * (1200 - 500 + 1)) + 500,
-      carbonDioxideLevel: Math.floor(Math.random() * (2000 - 400 + 1)) + 400,
-      carbonDioxideDetected: 0,
-    };
     self.lastUpdate = new Date().getTime() / 1000;
     self.updateData(params);
-    /* request(
-      {
-        url:
-          "https://airapi.airly.eu/v1/mapPoint/measurements?latitude=" +
-          this.latitude +
-          "&longitude=" +
-          this.longitude,
-        json: true,
-        headers: {
-          apikey: self.apikey,
-        },
-      },
-      function(err, response, data) {
-        if (!err && response.statusCode === 200) {
-          self.data = data.currentMeasurements;
-          self.lastUpdate = new Date().getTime() / 1000;
-          self.updateData(params);
-        } else {
-          logger.log("error", "fetchData error");
-        }
-        self.fetchInProgress = false;
-      }
-    ); */
+    fetch(this.ip)
+    .then(response => response.json())
+    .then(data => {
+      self.data = data;
+      self.lastUpdate = new Date().getTime() / 1000;
+      self.updateData(params);
+    });
   },
 
   updateAirQualityIndex: function(callback) {
