@@ -181,13 +181,6 @@ SevSensor.prototype = {
       .on("get", this.updateTemperature.bind(this));
     this.sensors["temperature"] = temperatureSensorService;
 
-    //pressure
-    let pressureSensorService = CustomCharacteristic.AtmosphericPressureSensor("Luftdruck","");
-    pressureSensorService
-      .getCharacteristic(CustomCharacteristic.AtmosphericPressureLevel)
-      .on("get", this.updatePressure.bind(this));
-    this.sensors["airPressure"] = pressureSensorService;
-
     return Object.values(this.sensors);
   },
 };
