@@ -1,5 +1,5 @@
 "use strict";
-const fetch = require("node-fetch");
+const request = require("request");
 let Service, Characteristic;
 
 module.exports = function(homebridge) {
@@ -19,7 +19,6 @@ function SevSensor(log, config) {
 }
 
 SevSensor.prototype = {
-  
   setData: function(params) {
     if (
       this.lastUpdate === 0 ||
@@ -32,7 +31,6 @@ SevSensor.prototype = {
     this.updateData(params);
   },
 
-  
   updateData: function(params) {
     let self = this;
 
@@ -42,7 +40,7 @@ SevSensor.prototype = {
       widget.setCharacteristic(Characteristic.StatusFault, 0);
       widget.setCharacteristic(Characteristic.StatusActive, 1);
       let value = params.formatter(this.data[params["key"]]);
-      this.log.info("calling callback from ",params["key"]);
+      this.log.info("calling callback from ", params["key"]);
       params.callback(null, value);
       if ("characteristics" in params) {
         params["characteristics"].forEach(function(characteristic) {
@@ -59,25 +57,32 @@ SevSensor.prototype = {
         Characteristic.StatusActive,
         0
       );
-      this.log.info("calling null callback from ",params["key"]);
+      this.log.info("calling null callback from ", params["key"]);
       params.callback(null);
     }
   },
-  
+
   fetchData: function(params) {
     let self = this;
 
     self.lastUpdate = new Date().getTime() / 1000;
     self.updateData(params);
-    self.log.info('Fetching from:', self.ip);
-    fetch(this.ip)
-    .then(response => response.json())
-    .then(data => {
-      self.log.info('Fetched from:', JSON.stringify(data));
-      self.data = data;
-      self.lastUpdate = new Date().getTime() / 1000;
-      self.updateData(params);
-    }).catch(e => self.log.error("error",e.message));
+    self.log.info("Fetching from:", self.ip);
+    request(
+      {
+        url: self.ip,
+        json: true,
+      },
+      function(err, response, data) {
+        if (!err && response.statusCode === 200) {
+          self.data = data;
+          self.lastUpdate = new Date().getTime() / 1000;
+          self.updateData(params);
+        } else {
+          this.log.error("fetchData error");
+        }
+      }
+    );
   },
 
   updateAirQualityIndex: function(callback) {
@@ -109,7 +114,7 @@ SevSensor.prototype = {
           key: "carbonDioxideLevel",
           characteristic: Characteristic.CarbonDioxideLevel,
           formatter: (value) => parseFloat(value),
-        }
+        },
       ],
       formatter: (value) => Math.round(parseFloat(value)),
     });
@@ -119,7 +124,7 @@ SevSensor.prototype = {
     this.setData({
       callback: callback,
       key: "temperature",
-      formatter: (value) => Math.round(parseFloat(value)*10)/10,
+      formatter: (value) => Math.round(parseFloat(value) * 10) / 10,
     });
   },
 
@@ -130,7 +135,6 @@ SevSensor.prototype = {
       formatter: (value) => Math.round(parseFloat(value)),
     });
   },
-
 
   identify: (callback) => callback(),
 
@@ -173,7 +177,6 @@ SevSensor.prototype = {
     this.sensors["temperature"] = temperatureSensorService;
 
     //pressure
-    
 
     return Object.values(this.sensors);
   },
