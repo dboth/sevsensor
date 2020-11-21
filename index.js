@@ -181,13 +181,6 @@ SevSensor.prototype = {
       .on("get", this.updateTemperature.bind(this));
     this.sensors["temperature"] = temperatureSensorService;
 
-    //temperature
-    let temperatureSensorService = new Service.TemperatureSensor("Temperatur");
-    temperatureSensorService
-      .getCharacteristic(Characteristic.CurrentTemperature)
-      .on("get", this.updateTemperature.bind(this));
-    this.sensors["temperature"] = temperatureSensorService;
-
     //pressure
     let pressureSensorService = CustomCharacteristic.AtmosphericPressureSensor("Luftdruck","");
     pressureSensorService
