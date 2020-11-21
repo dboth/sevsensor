@@ -49,6 +49,7 @@ SevSensor.prototype = {
       if ("characteristics" in params) {
         params["characteristics"].forEach(function(characteristic) {
           let value = characteristic.formatter(self.data[characteristic.key]);
+          self.log.info("setting characteristic "+characteristic.key);
           widget.setCharacteristic(characteristic.characteristic, value);
         });
       }
