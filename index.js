@@ -1,5 +1,5 @@
 "use strict";
-import { initCustomCharacteristic } from "./CustomCharacteristic";
+const initCustomCharacteristic  = require("./CustomCharacteristic");
 const fetch = require("node-fetch");
 let Service, Characteristic;
 var CustomCharacteristic;
