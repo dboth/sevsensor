@@ -1,11 +1,13 @@
 "use strict";
+import { initCustomCharacteristic } from "./CustomCharacteristic";
 const fetch = require("node-fetch");
 let Service, Characteristic;
+var CustomCharacteristic;
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-
+  CustomCharacteristic = initCustomCharacteristic(homebridge);
   homebridge.registerAccessory("homebridge-sevsensor", "SevSensor", SevSensor);
 };
 
@@ -117,6 +119,13 @@ SevSensor.prototype = {
     this.setData({
       callback: callback,
       key: "temperature",
+      characteristics: [
+        {
+          key: "airPressure",
+          characteristic: CustomCharacteristic.AtmosphericPressureLevel,
+          formatter: (value) => Math.round(parseFloat(value)),
+        }
+      ],
       formatter: (value) => Math.round(parseFloat(value)*10)/10,
     });
   },
@@ -168,7 +177,10 @@ SevSensor.prototype = {
     temperatureSensorService
       .getCharacteristic(Characteristic.CurrentTemperature)
       .on("get", this.updateTemperature.bind(this));
+    temperatureSensorService
+      .addCharacteristic(CustomCharacteristic.AtmosphericPressureLevel);
     this.sensors["temperature"] = temperatureSensorService;
+
 
     //pressure
     
