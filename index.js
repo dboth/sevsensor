@@ -10,12 +10,12 @@ module.exports = function(homebridge) {
 };
 
 function SevSensor(log, config) {
-  this.pollingInterval = 1;
+  this.pollingInterval = 10;
   this.lastUpdate = 0;
   this.sensors = {};
   this.log = log;
-  this.ip = config.id || "http://localhost:8080";
-  this.data = undefined;
+  this.ip = config.ip || "http://localhost:8080";
+  this.data = {};
 }
 
 SevSensor.prototype = {
@@ -23,8 +23,7 @@ SevSensor.prototype = {
   setData: function(params) {
     if (
       this.lastUpdate === 0 ||
-      this.lastUpdate + this.pollingInterval < new Date().getTime() / 1000 ||
-      this.data === undefined
+      this.lastUpdate + this.pollingInterval < new Date().getTime() / 1000
     ) {
       this.fetchData(params);
       return;
