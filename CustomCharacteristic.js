@@ -22,7 +22,7 @@ module.exports = function (homebridge) {
     });
     this.value = this.getDefaultValue();
   };
-  CustomCharacteristic.AtmosphericPressureLevel.UUID = 'E863F10F-079E-48FF-8F27-9C2605A29F52';
+  CustomCharacteristic.AtmosphericPressureLevel.UUID = 'F863F10F-079E-48FF-8F27-9C2605A29F52';
   inherits(CustomCharacteristic.AtmosphericPressureLevel, Characteristic);
 
 
@@ -40,11 +40,11 @@ module.exports = function (homebridge) {
     this.addOptionalCharacteristic(Characteristic.StatusTampered);
     this.addOptionalCharacteristic(Characteristic.Name);
   };
-  CustomCharacteristic.AtmosphericPressureSensor.UUID = 'B77831FD-D66A-46A4-B66D-FD7EE8DFE3CE';
+  CustomCharacteristic.AtmosphericPressureSensor.UUID = 'C77831FD-D66A-46A4-B66D-FD7EE8DFE3CE';
   inherits(CustomCharacteristic.AtmosphericPressureSensor, Service);
 
   CustomCharacteristic.ValvePosition = function() {
-    Characteristic.call(this, 'Valve position', 'E863F12E-079E-48FF-8F27-9C2605A29F52');
+    Characteristic.call(this, 'Valve position', 'F863F12E-079E-48FF-8F27-9C2605A29F52');
     this.setProps({
       format: Characteristic.Formats.UINT8,
       unit: Characteristic.Units.PERCENTAGE,
@@ -55,7 +55,7 @@ module.exports = function (homebridge) {
   inherits(CustomCharacteristic.ValvePosition, Characteristic);
 
   CustomCharacteristic.ProgramCommand = function() {
-    Characteristic.call(this, 'Program command', 'E863F12C-079E-48FF-8F27-9C2605A29F52');
+    Characteristic.call(this, 'Program command', 'F863F12C-079E-48FF-8F27-9C2605A29F52');
     this.setProps({
       format: Characteristic.Formats.DATA,
       perms: [Characteristic.Perms.WRITE, Characteristic.Perms.NOTIFY]
@@ -65,7 +65,7 @@ module.exports = function (homebridge) {
   inherits(CustomCharacteristic.ProgramCommand, Characteristic);
 
   CustomCharacteristic.ProgramData = function() {
-    Characteristic.call(this, 'Program data', 'E863F12F-079E-48FF-8F27-9C2605A29F52');
+    Characteristic.call(this, 'Program data', 'F863F12F-079E-48FF-8F27-9C2605A29F52');
     this.setProps({
       format: Characteristic.Formats.DATA,
       perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]

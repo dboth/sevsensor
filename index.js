@@ -120,14 +120,15 @@ SevSensor.prototype = {
     this.setData({
       callback: callback,
       key: "temperature",
-      characteristics: [
-        {
-          key: "airPressure",
-          characteristic: CustomCharacteristic.AtmosphericPressureLevel,
-          formatter: (value) => Math.round(parseFloat(value)),
-        }
-      ],
       formatter: (value) => Math.round(parseFloat(value)*10)/10,
+    });
+  },
+
+  updatePressure: function(callback) {
+    this.setData({
+      callback: callback,
+      key: "airPressure",
+      formatter: (value) => Math.round(parseFloat(value)),
     });
   },
 
@@ -178,13 +179,21 @@ SevSensor.prototype = {
     temperatureSensorService
       .getCharacteristic(Characteristic.CurrentTemperature)
       .on("get", this.updateTemperature.bind(this));
-    temperatureSensorService
-      .addCharacteristic(CustomCharacteristic.AtmosphericPressureLevel);
     this.sensors["temperature"] = temperatureSensorService;
 
+    //temperature
+    let temperatureSensorService = new Service.TemperatureSensor("Temperatur");
+    temperatureSensorService
+      .getCharacteristic(Characteristic.CurrentTemperature)
+      .on("get", this.updateTemperature.bind(this));
+    this.sensors["temperature"] = temperatureSensorService;
 
     //pressure
-    
+    let pressureSensorService = CustomCharacteristic.AtmosphericPressureSensor("Luftdruck","");
+    pressureSensorService
+      .getCharacteristic(CustomCharacteristic.AtmosphericPressureLevel)
+      .on("get", this.updatePressure.bind(this));
+    this.sensors["airPressure"] = pressureSensorService;
 
     return Object.values(this.sensors);
   },
