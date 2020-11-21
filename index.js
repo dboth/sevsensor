@@ -1,5 +1,5 @@
 "use strict";
-
+const fetch = require("node-fetch");
 let Service, Characteristic;
 
 module.exports = function(homebridge) {
@@ -42,6 +42,7 @@ SevSensor.prototype = {
       widget.setCharacteristic(Characteristic.StatusFault, 0);
       widget.setCharacteristic(Characteristic.StatusActive, 1);
       let value = params.formatter(this.data[params["key"]]);
+      this.log.info("calling callback from ",params["key"]);
       params.callback(null, value);
       if ("characteristics" in params) {
         params["characteristics"].forEach(function(characteristic) {
@@ -58,6 +59,7 @@ SevSensor.prototype = {
         Characteristic.StatusActive,
         0
       );
+      this.log.info("calling null callback from ",params["key"]);
       params.callback(null);
     }
   },
@@ -75,7 +77,7 @@ SevSensor.prototype = {
       self.data = data;
       self.lastUpdate = new Date().getTime() / 1000;
       self.updateData(params);
-    });
+    }).catch(e => self.log.error("error",e.message));
   },
 
   updateAirQualityIndex: function(callback) {
