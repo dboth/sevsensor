@@ -2,7 +2,7 @@ var inherits = require('util').inherits;
 
 var Service, Characteristic;
 
-export function initCustomCharacteristic(homebridge) {
+module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
 
